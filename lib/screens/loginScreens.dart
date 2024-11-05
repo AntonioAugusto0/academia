@@ -29,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
+              // Campo de Email
               TextFormField(
                 controller: controller.emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
@@ -42,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   return null;
                 },
               ),
+              // Campo de Senha
               TextFormField(
                 controller: controller.passwordController,
                 decoration: const InputDecoration(labelText: 'Password'),
@@ -56,32 +58,52 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
               ),
               const SizedBox(height: 20),
+              // Botão de login
               _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      setState(() {
-                        _isLoading = true;
-                      });
-                      bool success = await controller.loginUser();
-                      setState(() {
-                        _isLoading = false;
-                      });
-                      if (success) {
-                        Get.offAllNamed('/home'); 
-                      } else {
-                        Get.snackbar(
-                          'Login Failed', 
-                          'Invalid credentials',
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
-                      }
-                    }
-                  },
-                  child: const Text('Login'),
-                ),
+                  ? const Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          try {
+                            bool success = await controller.loginUser();
+                            setState(() {
+                              _isLoading = false;
+                            });
+                            if (success) {
+                              // Redireciona para a tela inicial
+                              Get.offAllNamed('/home');
+                            } else {
+                              // Se o login falhou, mostra a mensagem de erro
+                              if (controller!= null) {
+                            
+                              } else {
+                                Get.snackbar(
+                                  'Login Failed',
+                                  'Invalid credentials',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                              }
+                            }
+                          } catch (e) {
+                            setState(() {
+                              _isLoading = false;
+                            });
+                            // Em caso de erro inesperado
+                            Get.snackbar(
+                              'Error',
+                              'An error occurred: ${e.toString()}',
+                              snackPosition: SnackPosition.BOTTOM,
+                            );
+                          }
+                        }
+                      },
+                      child: const Text('Login'),
+                    ),
               const SizedBox(height: 20),
+              // Botão de registro
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/register');
